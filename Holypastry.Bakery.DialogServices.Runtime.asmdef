@@ -1,0 +1,20 @@
+{
+    "name": "bakery.Dialogs.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0762e03342273496088ece273e8c937e",
+        "GUID:96308c8b64ee446d19b379452820aff9",
+        "GUID:58bed0e7c5306824586d7eda03609289",
+        "GUID:f2273b449ee9b4220b277637043ebce1",
+        "GUID:33759803a11f4d538227861a78aba30b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
