@@ -13,12 +13,12 @@
     },
     "samples": [
         {
-            "displayName": "DialogExplorer",
+            "displayName": "Dialog Explorer",
             "description": "A script to explore branches in the Ink file",
             "path": "Samples~/DialogExplorer"
         },
         {
-            "displayName": "DialogUI",
+            "displayName": "Dialog UI",
             "description": "Example of a dialog UI using the Ink package",
             "path": "Samples~/DialogUI"
         }
