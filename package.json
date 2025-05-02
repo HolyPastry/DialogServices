@@ -1,0 +1,26 @@
+{
+    "name": "com.holypastry.bakery.dialogs",
+    "version": "0.1.2",
+    "displayName": "Dialog Services",
+    "description": "IMPORTANT - Install the ink git hub package FIRST\nBasic service wrapping around the Ink package.",
+    "unity": "2022.3",
+    "unityRelease": "42f1",
+    "hideInEditor": false,
+    "author": {
+        "name": "Sebastien Berton",
+        "email": "sebasti1.berton@gmail.com",
+        "url": "https://github.com/HolyPastry"
+    },
+    "samples": [
+        {
+            "displayName": "DialogExplorer",
+            "description": "A script to explore branches in the Ink file",
+            "path": "Samples~/DialogExplorer"
+        },
+        {
+            "displayName": "DialogUI",
+            "description": "Example of a dialog UI using the Ink package",
+            "path": "Samples~/DialogUI"
+        }
+    ]
+}
