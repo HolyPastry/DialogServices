@@ -82,7 +82,7 @@ namespace Bakery.Dialogs
         }
         private void LoadNarrativeVariables()
         {
-            _serialNarrative = new(SaveServices.Load<SerialNarrative>(SerialNarrative.KeyName));
+            _serialNarrative = SaveServices.Load<SerialNarrative>(SerialNarrative.KeyName);
         }
 
         private void SaveNarrativeVariables()
