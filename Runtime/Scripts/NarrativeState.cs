@@ -20,7 +20,6 @@ namespace Bakery.Dialogs
     public class SerialNarrative : SerialData
     {
         public const string KeyName = "NarrativeState";
-        public override string Key() => "NarrativeState";
         public List<NarrativeBool> NarrativeBools;
 
         public SerialNarrative(SerialNarrative serialNarrative)
@@ -87,7 +86,7 @@ namespace Bakery.Dialogs
 
         private void SaveNarrativeVariables()
         {
-            SaveServices.Save(_serialNarrative);
+            SaveServices.Save(SerialNarrative.KeyName, _serialNarrative);
         }
 
         public void SetNarrativeFlag(string flag, bool isTrue)
