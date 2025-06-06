@@ -17,6 +17,9 @@ namespace Bakery.Dialogs
         [SerializeField] private string _collectionFolder = "Characters";
         [SerializeField] private float _charPerSeconds = 50;
 
+        [SerializeField] private float _defaultDelayBefore = 0f;
+        [SerializeField] private float _defaultDelayAfter = 0f;
+
         private VoiceOverManager _voiceOverManager;
         private Story _story;
         private NarrativeState _narrativeState;
@@ -189,8 +192,8 @@ namespace Bakery.Dialogs
                     string line = _story.Continue();
                     if (!Valid(line)) continue;
                     (_talkingCharacter, line) = ExtractCharacterData(line);
-                    _delayAfter = 0;
-                    _delayBefore = 0;
+                    _delayAfter = _defaultDelayAfter;
+                    _delayBefore = _defaultDelayBefore;
 
                     ProcessTags(TagProcessor.EnumStep.BeforeLine, _story.currentTags, _talkingCharacter);
 
