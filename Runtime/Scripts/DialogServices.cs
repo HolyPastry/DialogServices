@@ -24,4 +24,6 @@ public static partial class DialogServices
     public static Action<string, bool> SetNarrativeFlag = (flag, isTrue) => { };
 
     public static Action<EnumDelayType, float> AddDelay = (delayType, delay) => { };
+    public static Action SkipOneLine = () => { };
+    public static Action SkipToNextChoice = () => { };
 }

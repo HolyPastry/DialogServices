@@ -28,8 +28,10 @@ namespace Bakery.Dialogs
         private float _delayAfter;
         private CharacterData _talkingCharacter;
         private bool _isDialogInProgress;
+        private bool _skipOneLine;
+        private bool _skipToNextChoice;
 
-
+        private CountdownTimer _delayTimer;
 
         void Awake()
         {
@@ -60,6 +62,9 @@ namespace Bakery.Dialogs
             DialogServices.SetTextNarrationSpeed = delegate { };
             DialogServices.AddDelay = delegate { };
 
+            DialogServices.SkipOneLine = delegate { };
+            DialogServices.SkipToNextChoice = delegate { };
+
         }
 
         void OnEnable()
@@ -82,6 +87,25 @@ namespace Bakery.Dialogs
             DialogServices.SetTextNarrationSpeed = (speed) => _charPerSeconds = speed;
 
             DialogServices.AddDelay = AddDelay;
+
+            DialogServices.SkipOneLine = SkipOneLine;
+            DialogServices.SkipToNextChoice = SkipToNextChoice;
+
+        }
+
+        void Update()
+        {
+            _delayTimer?.Tick(Time.deltaTime);
+        }
+
+        private void SkipToNextChoice()
+        {
+            _skipToNextChoice = true;
+        }
+
+        private void SkipOneLine()
+        {
+            _skipOneLine = true;
 
         }
 
@@ -172,7 +196,7 @@ namespace Bakery.Dialogs
 
                     DialogEvents.BeforeNewLine.Invoke();
 
-                    yield return new WaitForSeconds(_delayBefore);
+                    yield return WaitForSeconds(_delayBefore);
 
                     float lineDuration = -1;
 
@@ -189,17 +213,19 @@ namespace Bakery.Dialogs
                     DialogEvents.OnStoryNextLine.Invoke(_talkingCharacter, line, _story.currentTags, lineDuration);
 
                     if (lineDuration > 0)
-                        yield return new WaitForSeconds(Mathf.Max(0, lineDuration - _overlapDuration));
+                        yield return WaitForSeconds(Mathf.Max(0, lineDuration - _overlapDuration));
                     else
-                        yield return new WaitForSeconds(3f);
+                        yield return WaitForSeconds(3f);
 
                     ProcessTags(TagProcessor.EnumStep.AfterLine, new(_story.currentTags), _talkingCharacter);
                     _narrativeState.UpdateInkState();
-                    yield return new WaitForSeconds(_delayAfter);
+                    yield return WaitForSeconds(_delayAfter);
+                    _skipOneLine = false;
                 }
 
                 if (_story.currentChoices.Count > 0)
                 {
+                    _skipToNextChoice = false;
                     DialogEvents.OnChoiceAvailable?.Invoke(GetChoices());
                     yield return new WaitUntil(() => _story.canContinue);
                 }
@@ -211,6 +237,13 @@ namespace Bakery.Dialogs
             yield return null;
 
             EndDialog();
+        }
+
+        private WaitUntil WaitForSeconds(float delay)
+        {
+            _delayTimer = new CountdownTimer(delay);
+            _delayTimer.Start();
+            return new WaitUntil(() => _skipOneLine || _skipToNextChoice || !_delayTimer.IsRunning);
         }
 
         private bool Valid(string line)
