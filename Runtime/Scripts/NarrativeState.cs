@@ -50,7 +50,8 @@ namespace Bakery.Dialogs
 
             if (SaveServices.IsEnabled())
                 LoadNarrativeVariables();
-            else
+
+            if (_serialNarrative == null)
                 InitNarrativeVariables();
             _storyRef.variablesState.variableChangedEvent += UpdateStateFromInk;
 
