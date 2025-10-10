@@ -200,7 +200,7 @@ namespace Bakery.Dialogs
 
                     DialogEvents.BeforeNewLine.Invoke();
 
-                    yield return Wait(_delayBefore);
+                    yield return Wait(_delayBefore, forceTimer: true);
 
                     float lineDuration = -1;
 
@@ -217,13 +217,17 @@ namespace Bakery.Dialogs
                     DialogEvents.OnStoryNextLine.Invoke(_talkingCharacter, line, _story.currentTags, lineDuration);
 
                     if (lineDuration > 0)
-                        yield return Wait(Mathf.Max(0, lineDuration - _overlapDuration));
+                        yield return Wait(Mathf.Max(0, lineDuration - _overlapDuration),
+                                         forceTimer: false);
                     else
-                        yield return Wait(3f);
+                        yield return Wait(3f, forceTimer: false);
 
-                    ProcessTags(TagProcessor.EnumStep.AfterLine, new(_story.currentTags), _talkingCharacter);
+                    ProcessTags(TagProcessor.EnumStep.AfterLine,
+                                 new(_story.currentTags),
+                                  _talkingCharacter);
+
                     _narrativeState.UpdateInkState();
-                    yield return Wait(_delayAfter);
+                    yield return Wait(_delayAfter, forceTimer: true);
                     _skipOneLine = false;
                 }
 
@@ -243,9 +247,9 @@ namespace Bakery.Dialogs
             EndDialog();
         }
 
-        private WaitUntil Wait(float delay)
+        private WaitUntil Wait(float delay, bool forceTimer)
         {
-            if (_manualProgress)
+            if (_manualProgress && !forceTimer)
                 return new WaitUntil(() => _skipOneLine || _skipToNextChoice);
 
             _delayTimer = new CountdownTimer(delay);
