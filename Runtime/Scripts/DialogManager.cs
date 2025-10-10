@@ -19,6 +19,7 @@ namespace Bakery.Dialogs
 
         [SerializeField] private float _defaultDelayBefore = 0f;
         [SerializeField] private float _defaultDelayAfter = 0f;
+        [SerializeField] private bool _manualProgress = false;
 
         private VoiceOverManager _voiceOverManager;
         private Story _story;
@@ -181,10 +182,10 @@ namespace Bakery.Dialogs
 
         private IEnumerator PlayStoryRoutine()
         {
-
             _narrativeState.UpdateInkState();
             DialogEvents.OnDialogStart?.Invoke();
-
+            _skipOneLine = false;
+            _skipToNextChoice = false;
             while (true)
             {
                 while (_story.canContinue)
@@ -199,7 +200,7 @@ namespace Bakery.Dialogs
 
                     DialogEvents.BeforeNewLine.Invoke();
 
-                    yield return WaitForSeconds(_delayBefore);
+                    yield return Wait(_delayBefore);
 
                     float lineDuration = -1;
 
@@ -216,13 +217,13 @@ namespace Bakery.Dialogs
                     DialogEvents.OnStoryNextLine.Invoke(_talkingCharacter, line, _story.currentTags, lineDuration);
 
                     if (lineDuration > 0)
-                        yield return WaitForSeconds(Mathf.Max(0, lineDuration - _overlapDuration));
+                        yield return Wait(Mathf.Max(0, lineDuration - _overlapDuration));
                     else
-                        yield return WaitForSeconds(3f);
+                        yield return Wait(3f);
 
                     ProcessTags(TagProcessor.EnumStep.AfterLine, new(_story.currentTags), _talkingCharacter);
                     _narrativeState.UpdateInkState();
-                    yield return WaitForSeconds(_delayAfter);
+                    yield return Wait(_delayAfter);
                     _skipOneLine = false;
                 }
 
@@ -242,8 +243,11 @@ namespace Bakery.Dialogs
             EndDialog();
         }
 
-        private WaitUntil WaitForSeconds(float delay)
+        private WaitUntil Wait(float delay)
         {
+            if (_manualProgress)
+                return new WaitUntil(() => _skipOneLine || _skipToNextChoice);
+
             _delayTimer = new CountdownTimer(delay);
             _delayTimer.Start();
             return new WaitUntil(() => _skipOneLine || _skipToNextChoice || !_delayTimer.IsRunning);
