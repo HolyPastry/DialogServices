@@ -7,18 +7,18 @@ using UnityEngine;
 
 namespace Bakery.Dialogs
 {
-    internal class VoiceOverManager : MonoBehaviour
+    public class VoiceOverManager : MonoBehaviour
     {
         internal static Action<CharacterVoice> AddVoice = delegate { };
         internal static Action<CharacterVoice> RemoveVoice = delegate { };
 
         internal float LineDuration => _currentLineClip != null ? _currentLineClip.length : -1;
-        private readonly List<CharacterVoice> _characterVoices = new();
+        protected readonly List<CharacterVoice> _characterVoices = new();
 
 
-        private AudioClip _currentLineClip;
-        private bool _loaded;
-        private CharacterVoice _currentVoice;
+        protected AudioClip _currentLineClip;
+        protected bool _loaded;
+        protected CharacterVoice _currentVoice;
 
 
         protected virtual void OnEnable()
@@ -60,7 +60,7 @@ namespace Bakery.Dialogs
             _loaded = true;
         }
 
-        private bool Valid(CharacterData data, string line, out CharacterVoice characterVoice)
+        protected bool Valid(CharacterData data, string line, out CharacterVoice characterVoice)
         {
             characterVoice = null;
             if (string.IsNullOrEmpty(line))
