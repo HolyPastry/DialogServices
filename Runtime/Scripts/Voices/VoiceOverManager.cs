@@ -21,19 +21,19 @@ namespace Bakery.Dialogs
         private CharacterVoice _currentVoice;
 
 
-        void OnEnable()
+        protected virtual void OnEnable()
         {
             AddVoice = (voice) => _characterVoices.AddUnique(voice);
             RemoveVoice = (voice) => _characterVoices.Remove(voice);
         }
 
-        void OnDisable()
+        protected virtual void OnDisable()
         {
             AddVoice = delegate { };
             RemoveVoice = delegate { };
         }
 
-        public WaitUntil LoadLine(CharacterData data, string line)
+        public virtual WaitUntil LoadLine(CharacterData data, string line)
         {
             if (!Valid(data, line, out _currentVoice))
                 return new WaitUntil(() => true);
@@ -44,7 +44,7 @@ namespace Bakery.Dialogs
             return new WaitUntil(() => _loaded);
         }
 
-        protected async void LoadLineAsync(string line)
+        protected virtual async void LoadLineAsync(string line)
         {
             if (string.IsNullOrEmpty(_currentVoice.CharacterData.ActorName))
             {
@@ -90,7 +90,7 @@ namespace Bakery.Dialogs
         }
 
 
-        internal void SayLoadedLine()
+        public virtual void SayLoadedLine()
         {
             if (_currentVoice == null)
             {
