@@ -1,5 +1,5 @@
 using System;
-
+using System.Collections;
 using System.Collections.Generic;
 using Holypastry.Bakery;
 
@@ -33,15 +33,21 @@ namespace Bakery.Dialogs
             RemoveVoice = delegate { };
         }
 
-        public virtual WaitUntil LoadLine(CharacterData data, string line)
+        public virtual Coroutine LoadLine(CharacterData data, string line)
         {
             if (!Valid(data, line, out _currentVoice))
-                return new WaitUntil(() => true);
+                return null;
+
             _loaded = false;
             _currentLineClip = null;
-            LoadLineAsync(line);
+            return StartCoroutine(LoadLineCoroutine(line));
 
-            return new WaitUntil(() => _loaded);
+        }
+
+        private IEnumerator LoadLineCoroutine(string line)
+        {
+            LoadLineAsync(line);
+            yield return new WaitUntil(() => _loaded);
         }
 
         protected virtual async void LoadLineAsync(string line)
