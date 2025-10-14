@@ -1,15 +1,15 @@
 
 using UnityEngine;
-using KBCore.Refs;
 using System.Collections;
 using System;
+using UnityEngine.SocialPlatforms;
 
 namespace Bakery.Dialogs
 {
-    [RequireComponent(typeof(AudioSource))]
-    public class CharacterVoice : ValidatedMonoBehaviour
+
+    public class CharacterVoice : MonoBehaviour
     {
-        [SerializeField, Self] private AudioSource _audioSource;
+        [SerializeField] private AudioSource _audioSource;
 
         public WaitUntil WaitUntilLoaded => new(() => !_isLoaded);
 
@@ -29,12 +29,12 @@ namespace Bakery.Dialogs
                 return;
             }
             if (!_initialized) return;
-            VoiceOverManager.AddVoice(this);
+            LocalVoiceOverManager.AddVoice(this);
         }
 
         void OnDisable()
         {
-            VoiceOverManager.RemoveVoice(this);
+            LocalVoiceOverManager.RemoveVoice(this);
         }
 
         IEnumerator Start()
@@ -42,14 +42,14 @@ namespace Bakery.Dialogs
             yield return FlowServices.WaitUntilReady();
             yield return DialogServices.WaitUntilReady();
 
-            VoiceOverManager.AddVoice(this);
+            LocalVoiceOverManager.AddVoice(this);
             _initialized = true;
         }
 
         void OnDestroy()
         {
             if (_initialized)
-                VoiceOverManager.RemoveVoice(this);
+                LocalVoiceOverManager.RemoveVoice(this);
         }
 
         public void Say(AudioClip currentLineClip)
