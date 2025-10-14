@@ -19,6 +19,7 @@ namespace Bakery.Dialogs
 
         [SerializeField] private float _defaultDelayBefore = 0f;
         [SerializeField] private float _defaultDelayAfter = 0f;
+        [SerializeField] private float _defaultWaitTime = 3f;
         [SerializeField] private EnumPlayMode _playMode = EnumPlayMode.Mixed;
 
         private VoiceOverManager _voiceOverManager;
@@ -222,7 +223,7 @@ namespace Bakery.Dialogs
                         yield return Wait(Mathf.Max(0, lineDuration - _overlapDuration),
                                          extraTimer: false);
                     else
-                        yield return Wait(3f, extraTimer: false);
+                        yield return Wait(_defaultWaitTime, extraTimer: false);
 
                     ProcessTags(TagProcessor.EnumStep.AfterLine,
                                  new(_story.currentTags),
