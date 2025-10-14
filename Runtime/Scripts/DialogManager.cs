@@ -10,6 +10,12 @@ using Holypastry.Bakery.Flow;
 
 namespace Bakery.Dialogs
 {
+    public enum EnumPlayMode
+    {
+        Manual,
+        Automatic,
+        Mixed
+    }
     internal class DialogManager : Service
     {
 
@@ -19,7 +25,7 @@ namespace Bakery.Dialogs
 
         [SerializeField] private float _defaultDelayBefore = 0f;
         [SerializeField] private float _defaultDelayAfter = 0f;
-        [SerializeField] private bool _manualProgress = false;
+        [SerializeField] private EnumPlayMode _playMode = EnumPlayMode.Mixed;
 
         private VoiceOverManager _voiceOverManager;
         private Story _story;
@@ -68,6 +74,7 @@ namespace Bakery.Dialogs
 
             DialogServices.SkipOneLine = delegate { };
             DialogServices.SkipToNextChoice = delegate { };
+            DialogServices.SetPlayMode = delegate { };
 
         }
 
@@ -95,6 +102,8 @@ namespace Bakery.Dialogs
             DialogServices.SkipOneLine = SkipOneLine;
             DialogServices.SkipToNextChoice = SkipToNextChoice;
 
+            DialogServices.SetPlayMode = (playMode) => _playMode = playMode;
+
         }
 
         void Update()
@@ -110,7 +119,6 @@ namespace Bakery.Dialogs
         private void SkipOneLine()
         {
             _skipOneLine = true;
-
         }
 
         private void AddDelay(EnumDelayType type, float delay)
@@ -200,7 +208,7 @@ namespace Bakery.Dialogs
 
                     DialogEvents.BeforeNewLine.Invoke();
 
-                    yield return Wait(_delayBefore, forceTimer: true);
+                    yield return Wait(_delayBefore, extraTimer: true);
 
                     float lineDuration = -1;
 
@@ -218,16 +226,16 @@ namespace Bakery.Dialogs
 
                     if (lineDuration > 0)
                         yield return Wait(Mathf.Max(0, lineDuration - _overlapDuration),
-                                         forceTimer: false);
+                                         extraTimer: false);
                     else
-                        yield return Wait(3f, forceTimer: false);
+                        yield return Wait(3f, extraTimer: false);
 
                     ProcessTags(TagProcessor.EnumStep.AfterLine,
                                  new(_story.currentTags),
                                   _talkingCharacter);
 
                     _narrativeState.UpdateInkState();
-                    yield return Wait(_delayAfter, forceTimer: true);
+                    yield return Wait(_delayAfter, extraTimer: true);
                     _skipOneLine = false;
                 }
 
@@ -247,13 +255,21 @@ namespace Bakery.Dialogs
             EndDialog();
         }
 
-        private WaitUntil Wait(float delay, bool forceTimer)
+        private WaitUntil Wait(float delay, bool extraTimer)
         {
-            if (_manualProgress && !forceTimer)
+            if (_playMode == EnumPlayMode.Manual)
                 return new WaitUntil(() => _skipOneLine || _skipToNextChoice);
+
+            if (_playMode == EnumPlayMode.Automatic)
+            {
+                _delayTimer = new CountdownTimer(delay);
+                _delayTimer.Start();
+                return new WaitUntil(() => !_delayTimer.IsRunning);
+            }
 
             _delayTimer = new CountdownTimer(delay);
             _delayTimer.Start();
+
             return new WaitUntil(() => _skipOneLine || _skipToNextChoice || !_delayTimer.IsRunning);
         }
 

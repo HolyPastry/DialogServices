@@ -26,4 +26,6 @@ public static partial class DialogServices
     public static Action<EnumDelayType, float> AddDelay = (delayType, delay) => { };
     public static Action SkipOneLine = () => { };
     public static Action SkipToNextChoice = () => { };
+
+    public static Action<Bakery.Dialogs.EnumPlayMode> SetPlayMode = (playMode) => { };
 }
