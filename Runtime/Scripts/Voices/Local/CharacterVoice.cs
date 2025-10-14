@@ -56,5 +56,10 @@ namespace Bakery.Dialogs
         {
             _audioSource.PlayOneShot(currentLineClip);
         }
+
+        internal void Interrupt()
+        {
+            _audioSource.Stop();
+        }
     }
 }

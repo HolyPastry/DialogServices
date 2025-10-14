@@ -230,6 +230,7 @@ namespace Bakery.Dialogs
 
                     _narrativeState.UpdateInkState();
                     yield return Wait(_delayAfter, extraTimer: true);
+                    if (_voiceOverManager != null) _voiceOverManager.Interrupt();
                     _skipOneLine = false;
                 }
 
