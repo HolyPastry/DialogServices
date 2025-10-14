@@ -18,7 +18,7 @@ namespace Bakery.Dialogs
         protected bool _loaded;
         protected CharacterVoice _currentVoice;
 
-        internal override float LineDuration => _currentLineClip != null ? _currentLineClip.length : -1;
+        public override float LineDuration => _currentLineClip != null ? _currentLineClip.length : -1;
         protected virtual void OnEnable()
         {
             AddVoice = (voice) => _characterVoices.AddUnique(voice);
