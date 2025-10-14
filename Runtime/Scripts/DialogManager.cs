@@ -10,12 +10,6 @@ using Holypastry.Bakery.Flow;
 
 namespace Bakery.Dialogs
 {
-    public enum EnumPlayMode
-    {
-        Manual,
-        Automatic,
-        Mixed
-    }
     internal class DialogManager : Service
     {
 
@@ -258,7 +252,10 @@ namespace Bakery.Dialogs
         private WaitUntil Wait(float delay, bool extraTimer)
         {
             if (_playMode == EnumPlayMode.Manual)
+            {
+                if (extraTimer) return null;
                 return new WaitUntil(() => _skipOneLine || _skipToNextChoice);
+            }
 
             if (_playMode == EnumPlayMode.Automatic)
             {
