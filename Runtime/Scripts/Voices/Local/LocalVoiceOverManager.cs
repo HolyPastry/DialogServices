@@ -101,7 +101,7 @@ namespace Bakery.Dialogs
             _currentVoice.Say(_currentLineClip);
         }
 
-        public override void Interrupt()
+        public override void Stop()
         {
             _currentVoice.Interrupt();
         }

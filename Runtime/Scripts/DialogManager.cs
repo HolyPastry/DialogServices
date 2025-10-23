@@ -168,6 +168,7 @@ namespace Bakery.Dialogs
 
         private void EndDialog()
         {
+            _voiceOverManager.Stop();
             StopAllCoroutines();
             _isDialogInProgress = false;
             DialogEvents.OnDialogEnd?.Invoke();
@@ -231,7 +232,7 @@ namespace Bakery.Dialogs
 
                     _narrativeState.UpdateInkState();
                     yield return Wait(_delayAfter, extraTimer: true);
-                    if (_voiceOverManager != null) _voiceOverManager.Interrupt();
+                    if (_voiceOverManager != null) _voiceOverManager.Stop();
                     _skipOneLine = false;
                 }
 
