@@ -241,6 +241,7 @@ namespace Bakery.Dialogs
                     _skipToNextChoice = false;
                     DialogEvents.OnChoiceAvailable?.Invoke(GetChoices());
                     yield return new WaitUntil(() => _story.canContinue);
+                    _skipOneLine = false;
                 }
                 else
                 {
