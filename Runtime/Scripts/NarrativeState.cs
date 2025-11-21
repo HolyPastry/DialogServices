@@ -44,11 +44,15 @@ namespace Bakery.Dialogs
         SerialNarrative _serialNarrative;
         private readonly Story _storyRef;
 
+        private bool _saveEnabled;
+
         public NarrativeState(Story story)
         {
             _storyRef = story;
 
-            if (SaveServices.IsEnabled())
+            _saveEnabled = SaveServices.IsEnabled();
+
+            if (_saveEnabled)
                 LoadNarrativeVariables();
 
             if (_serialNarrative == null)
@@ -87,6 +91,7 @@ namespace Bakery.Dialogs
 
         private void SaveNarrativeVariables()
         {
+            if (!_saveEnabled) return;
             SaveServices.Save(SerialNarrative.KeyName, _serialNarrative);
         }
 
