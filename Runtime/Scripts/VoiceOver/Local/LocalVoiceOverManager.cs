@@ -79,12 +79,12 @@ namespace Bakery
         }
         protected virtual async void LoadLineAsync(string line)
         {
-            if (string.IsNullOrEmpty(_currentVoice.CharacterData.ActorName))
+            if (string.IsNullOrEmpty(_currentVoice.CharacterData.Name))
             {
                 Debug.LogWarning("ActorName is null or empty", this);
                 return;
             }
-            var filename = VoiceFileUtils.TextToFileName(line, _currentVoice.CharacterData.ActorName);
+            var filename = VoiceFileUtils.TextToFileName(line, _currentVoice.CharacterData.Name);
             _currentLineClip = await VoiceFileUtils.LoadAudioClipFromLocal(filename);
 
             if (_currentLineClip == null)
