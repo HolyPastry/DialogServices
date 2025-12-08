@@ -2,7 +2,7 @@
 using Holypastry.Bakery;
 using UnityEngine;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     [CreateAssetMenu(fileName = "DialogCharacter", menuName = "Dialogs/Character", order = 0)]
     public class CharacterData : ContentTag

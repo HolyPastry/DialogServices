@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 using UnityEngine;
 using System.IO;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public static class VoiceFileUtils
     {

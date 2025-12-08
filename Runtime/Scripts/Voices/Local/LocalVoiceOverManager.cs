@@ -5,7 +5,7 @@ using Holypastry.Bakery;
 
 using UnityEngine;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public class LocalVoiceOverManager : VoiceOverManager
     {

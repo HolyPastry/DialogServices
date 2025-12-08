@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Bakery.Dialogs.UI
+namespace Bakery.UI
 {
 
     public class UIChoiceButton : ValidatedMonoBehaviour

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
 
     public abstract class TagProcessor : MonoBehaviour

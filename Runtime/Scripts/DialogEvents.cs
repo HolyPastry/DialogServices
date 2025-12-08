@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public static class DialogEvents
     {

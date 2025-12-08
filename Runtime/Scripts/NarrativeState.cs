@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Bakery.Saves;
 
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     [Serializable]
     public struct NarrativeBool

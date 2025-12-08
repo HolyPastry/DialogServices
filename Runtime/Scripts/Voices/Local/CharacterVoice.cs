@@ -4,7 +4,7 @@ using System.Collections;
 using System;
 using UnityEngine.SocialPlatforms;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
 
     public class CharacterVoice : MonoBehaviour

@@ -1,4 +1,4 @@
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public enum EnumDelayType
     {

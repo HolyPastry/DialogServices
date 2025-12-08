@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Ink.Runtime;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public struct DialogChoice
     {

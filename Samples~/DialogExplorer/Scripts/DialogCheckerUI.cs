@@ -6,7 +6,7 @@ using Holypastry.Bakery;
 using TMPro;
 using UnityEngine;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public class DialogCheckerUI : MonoBehaviour
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Bakery.Dialogs.UI
+namespace Bakery.UI
 {
 
     public class UIDialogSubtitle : MonoBehaviour

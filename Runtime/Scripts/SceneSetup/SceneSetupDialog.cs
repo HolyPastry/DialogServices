@@ -5,7 +5,7 @@ using Holypastry.Bakery.Flow;
 
 
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public class SceneSetupDialog : SceneSetupScript
     {

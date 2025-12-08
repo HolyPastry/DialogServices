@@ -8,7 +8,7 @@ using Ink.Runtime;
 
 using UnityEngine;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public abstract class DialogExplorer : MonoBehaviour
     {

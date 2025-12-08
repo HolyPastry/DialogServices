@@ -8,7 +8,7 @@ using Holypastry.Bakery;
 using Holypastry.Bakery.Flow;
 
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     internal class DialogManager : Service
     {

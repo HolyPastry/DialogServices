@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public abstract class VoiceOverManager : MonoBehaviour
     {

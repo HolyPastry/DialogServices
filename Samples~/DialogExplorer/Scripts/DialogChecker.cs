@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Bakery.Dialogs
+namespace Bakery
 {
     public class DialogChecker : DialogExplorer
     {
