@@ -39,7 +39,7 @@ namespace Bakery
 
         IEnumerator Start()
         {
-            yield return FlowServices.WaitUntilReady();
+            yield return Flow.Manager().WaitUntilReady;
             yield return DialogServices.WaitUntilReady();
 
             LocalVoiceOverManager.AddVoice(this);

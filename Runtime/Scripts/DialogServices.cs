@@ -1,5 +1,5 @@
 using System;
-using Bakery.Dialogs;
+using Bakery;
 using UnityEngine;
 
 
@@ -27,5 +27,5 @@ public static partial class DialogServices
     public static Action SkipOneLine = () => { };
     public static Action SkipToNextChoice = () => { };
 
-    public static Action<Bakery.Dialogs.EnumPlayMode> SetPlayMode = (playMode) => { };
+    public static Action<Bakery.EnumPlayMode> SetPlayMode = (playMode) => { };
 }

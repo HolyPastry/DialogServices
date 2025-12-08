@@ -5,12 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Holypastry.Bakery;
-using Holypastry.Bakery.Flow;
-
 
 namespace Bakery
 {
-    internal class DialogManager : Service
+    internal class DialogManager : MonoBehaviour
     {
 
         [SerializeField] private TextAsset _inkJSON;
@@ -75,7 +73,7 @@ namespace Bakery
 
         void OnEnable()
         {
-            DialogServices.WaitUntilReady = () => WaitUntilReady;
+            DialogServices.WaitUntilReady = () => new WaitUntil(() => true);
 
             DialogServices.MakeChoice = MakeChoice;
 

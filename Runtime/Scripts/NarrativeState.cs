@@ -3,7 +3,7 @@ using UnityEngine;
 using Ink.Runtime;
 using System;
 using System.Collections.Generic;
-using Bakery.Saves;
+using Bakery;
 
 
 namespace Bakery
@@ -17,7 +17,7 @@ namespace Bakery
 
 
     [Serializable]
-    public class SerialNarrative : SerialData
+    public class SerialNarrative : ISerialData
     {
         public const string KeyName = "NarrativeState";
         public List<NarrativeBool> NarrativeBools;
@@ -36,6 +36,13 @@ namespace Bakery
         {
             NarrativeBools.Clear();
         }
+
+        public void Deserialize()
+        { }
+
+        public void Serialize()
+        {
+        }
     }
 
 
@@ -50,7 +57,7 @@ namespace Bakery
         {
             _storyRef = story;
 
-            _saveEnabled = SaveServices.IsEnabled();
+            _saveEnabled = Persistence.Manager().IsEnabled;
 
             if (_saveEnabled)
                 LoadNarrativeVariables();
@@ -86,13 +93,13 @@ namespace Bakery
         }
         private void LoadNarrativeVariables()
         {
-            _serialNarrative = SaveServices.Load<SerialNarrative>(SerialNarrative.KeyName);
+            _serialNarrative = Persistence.Manager().LoadOrCreate<SerialNarrative>(SerialNarrative.KeyName);
         }
 
         private void SaveNarrativeVariables()
         {
             if (!_saveEnabled) return;
-            SaveServices.Save(SerialNarrative.KeyName, _serialNarrative);
+            Persistence.Manager().Cache(SerialNarrative.KeyName, _serialNarrative);
         }
 
         public void SetNarrativeFlag(string flag, bool isTrue)

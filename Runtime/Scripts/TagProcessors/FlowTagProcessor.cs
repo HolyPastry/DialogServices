@@ -16,7 +16,7 @@ namespace Bakery
             {
                 if (!tag.StartsWith("LoadNextScene")) continue;
                 newTags.Remove(tag);
-                FlowServices.LoadNextScene();
+                Flow.Manager().LoadNextScene();
             }
             return newTags;
         }
