@@ -13,12 +13,11 @@ namespace Bakery
 
         public WaitUntil WaitUntilLoaded => new(() => !_isLoaded);
 
-        [SerializeField] private CharacterData _characterData;
+        [SerializeField] private ThespianData _characterData;
         private bool _isLoaded;
         private bool _initialized;
 
-        public CharacterData CharacterData => _characterData;
-
+        public ThespianData CharacterData => _characterData;
         public float Length => _audioSource.clip != null ? _audioSource.clip.length : -1;
 
         void OnEnable()
@@ -40,7 +39,7 @@ namespace Bakery
         IEnumerator Start()
         {
             yield return Flow.Manager().WaitUntilReady;
-            yield return DialogServices.WaitUntilReady();
+            yield return Dialogs.Manager().WaitUntilReady;
 
             LocalVoiceOverManager.AddVoice(this);
             _initialized = true;

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Bakery
 {
-    public class LocalVoiceOverManager : VoiceOverManager
+    public class LocalVoiceOverManager : MonoBehaviour, IVoiceOverManager
     {
         internal static Action<CharacterVoice> AddVoice = delegate { };
         internal static Action<CharacterVoice> RemoveVoice = delegate { };
@@ -18,20 +18,22 @@ namespace Bakery
         protected bool _loaded;
         protected CharacterVoice _currentVoice;
 
-        public override float LineDuration => _currentLineClip != null ? _currentLineClip.length : -1;
+        public float LineDuration => _currentLineClip != null ? _currentLineClip.length : -1;
         protected virtual void OnEnable()
         {
             AddVoice = (voice) => _characterVoices.AddUnique(voice);
             RemoveVoice = (voice) => _characterVoices.Remove(voice);
+            Dialogs.VoiceOver = () => this;
         }
 
         protected virtual void OnDisable()
         {
             AddVoice = delegate { };
             RemoveVoice = delegate { };
+            Dialogs.VoiceOver = Dialogs.UnregisterVoiceOverManager;
         }
 
-        public override Coroutine LoadLine(CharacterData data, string line)
+        public Coroutine LoadLine(ThespianData data, string line)
         {
             if (!Valid(data, line, out _currentVoice))
                 return null;
@@ -47,7 +49,7 @@ namespace Bakery
             yield return new WaitUntil(() => _loaded);
         }
 
-        protected bool Valid(CharacterData data, string line, out CharacterVoice characterVoice)
+        protected bool Valid(ThespianData data, string line, out CharacterVoice characterVoice)
         {
             characterVoice = null;
             if (string.IsNullOrEmpty(line))
@@ -91,7 +93,7 @@ namespace Bakery
             _loaded = true;
         }
 
-        public override void SayLoadedLine()
+        public void SayLine()
         {
             if (_currentVoice == null)
             {
@@ -101,7 +103,7 @@ namespace Bakery
             _currentVoice.Say(_currentLineClip);
         }
 
-        public override void Stop()
+        public void Stop()
         {
             _currentVoice.Interrupt();
         }

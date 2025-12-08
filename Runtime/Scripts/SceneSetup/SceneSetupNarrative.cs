@@ -12,7 +12,7 @@ namespace Bakery
         public override IEnumerator Routine()
         {
             foreach (var narrative in _narrativeBool)
-                DialogServices.SetNarrativeFlag(narrative.Key, narrative.Value);
+                Dialogs.NarrativeState().SetFlag(narrative.Key, narrative.Value);
             yield break;
         }
     }

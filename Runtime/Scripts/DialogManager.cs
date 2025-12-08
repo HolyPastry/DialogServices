@@ -8,113 +8,73 @@ using Holypastry.Bakery;
 
 namespace Bakery
 {
-    internal class DialogManager : MonoBehaviour
+
+    internal class DialogManager : MonoBehaviour, IDialogManager
     {
 
         [SerializeField] private TextAsset _inkJSON;
-        [SerializeField] private string _collectionFolder = "Characters";
-        [SerializeField] private float _charPerSeconds = 50;
 
+        [SerializeField] private float _charPerSeconds = 50;
         [SerializeField] private float _defaultDelayBefore = 0f;
         [SerializeField] private float _defaultDelayAfter = 0f;
         [SerializeField] private float _defaultWaitTime = 3f;
         [SerializeField] private EnumPlayMode _playMode = EnumPlayMode.Mixed;
 
-        private VoiceOverManager _voiceOverManager;
+        public WaitUntil WaitUntilReady => new(() => true);
+
+        public bool IsDialogInProgress => _isDialogInProgress;
+        public WaitUntil WaitUntilDialogEnds => new(() => !_isDialogInProgress);
+        public Story StoryRef => _story;
+
+        public EnumPlayMode PlayMode
+        { get => _playMode; set => _playMode = value; }
+        public float NarrationSpeed
+        { get => _charPerSeconds; set => _charPerSeconds = value; }
+
+
+
         private Story _story;
-        private NarrativeState _narrativeState;
-        private DataCollection<CharacterData> _dataCollection;
+
         private readonly List<TagProcessor> _tagProcessors = new();
 
         private float _delayBefore;
         private float _overlapDuration;
         private float _delayAfter;
-        private CharacterData _talkingCharacter;
         private bool _isDialogInProgress;
         private bool _skipOneLine;
         private bool _skipToNextChoice;
-
         private CountdownTimer _delayTimer;
 
         void Awake()
         {
-            _dataCollection = new DataCollection<CharacterData>(_collectionFolder);
+
             _story = new Story(_inkJSON.text);
             _tagProcessors.AddRange(GetComponentsInChildren<TagProcessor>());
-            _narrativeState = new NarrativeState(_story);
-            _voiceOverManager = GetComponent<VoiceOverManager>();
-
         }
 
         void OnDisable()
         {
-            DialogServices.WaitUntilReady = () => new WaitUntil(() => true);
-
-            DialogServices.MakeChoice = delegate { };
-
-            DialogServices.IsDialogInProgress = delegate { return false; };
-            DialogServices.WaitUntilDialogEnds = () => new WaitUntil(() => true);
-
-            DialogServices.Start = delegate { };
-            DialogServices.Exists = (character) => false;
-            DialogServices.InterruptDialog = delegate { };
-
-            DialogServices.SetNarrativeFlag = delegate { };
-            DialogServices.ExtractCharacter = (line) => (null, "");
-            DialogServices.CheckNarrativeFlag = delegate { return false; };
-            DialogServices.SetTextNarrationSpeed = delegate { };
-            DialogServices.AddDelay = delegate { };
-
-            DialogServices.SkipOneLine = delegate { };
-            DialogServices.SkipToNextChoice = delegate { };
-            DialogServices.SetPlayMode = delegate { };
+            Dialogs.Manager = Dialogs.UnregisterManager;
 
         }
 
         void OnEnable()
         {
-            DialogServices.WaitUntilReady = () => new WaitUntil(() => true);
-
-            DialogServices.MakeChoice = MakeChoice;
-
-            DialogServices.IsDialogInProgress = () => _isDialogInProgress;
-            DialogServices.WaitUntilDialogEnds = () => new WaitUntil(() => !_isDialogInProgress);
-
-            DialogServices.Start = StartDialog;
-            DialogServices.Exists = TryAndSetStoryPath;
-            DialogServices.InterruptDialog = EndDialog;
-
-            DialogServices.ExtractCharacter = (line) => ExtractCharacterData(line);
-            DialogServices.SetNarrativeFlag = _narrativeState.SetNarrativeFlag;
-            DialogServices.CheckNarrativeFlag = _narrativeState.CheckNarrativeFlag;
-
-            DialogServices.SetTextNarrationSpeed = (speed) => _charPerSeconds = speed;
-
-            DialogServices.AddDelay = AddDelay;
-
-            DialogServices.SkipOneLine = SkipOneLine;
-            DialogServices.SkipToNextChoice = SkipToNextChoice;
-
-            DialogServices.SetPlayMode = (playMode) => _playMode = playMode;
-
+            Dialogs.Manager = () => this;
         }
+
+
 
         void Update()
         {
             _delayTimer?.Tick(Time.deltaTime);
         }
 
-        private void SkipToNextChoice()
-        {
-            _skipToNextChoice = true;
-        }
+        public void SkipToNextChoice() => _skipToNextChoice = true;
 
-        private void SkipOneLine()
-        {
-            _skipOneLine = true;
-        }
+        public void SkipOneLine() => _skipOneLine = true;
 
-        private void AddDelay(EnumDelayType type, float delay)
+        public void AddDelay(EnumDelayType type, float delay)
         {
             switch (type)
             {
@@ -133,7 +93,7 @@ namespace Bakery
 
         }
 
-        private bool TryAndSetStoryPath(string path)
+        bool TryAndSetStoryPath(string path)
         {
             try
             {
@@ -146,7 +106,7 @@ namespace Bakery
             return true;
         }
 
-        private void StartDialog(string Knot)
+        public void Play(string Knot)
         {
 
             if (string.IsNullOrEmpty(Knot))
@@ -166,26 +126,27 @@ namespace Bakery
 
         private void EndDialog()
         {
-            _voiceOverManager.Stop();
+            Dialogs.VoiceOver().Stop();
             StopAllCoroutines();
             _isDialogInProgress = false;
-            DialogEvents.OnDialogEnd?.Invoke();
+            Dialogs.Events.OnDialogEnd?.Invoke();
         }
 
 
-        private void MakeChoice(int index)
+        public void MakeChoice(int index)
         {
             foreach (var processor in _tagProcessors)
             {
-                processor.ProcessTags(_talkingCharacter, _story.currentChoices[index].tags);
+                processor.ProcessTags(Dialogs.Thespians().TalkingCharacter,
+                     _story.currentChoices[index].tags);
             }
             _story.ChooseChoiceIndex(index);
         }
 
         private IEnumerator PlayStoryRoutine()
         {
-            _narrativeState.UpdateInkState();
-            DialogEvents.OnDialogStart?.Invoke();
+            Dialogs.NarrativeState().UpdateState();
+            Dialogs.Events.OnDialogStart?.Invoke();
             _skipOneLine = false;
             _skipToNextChoice = false;
             while (true)
@@ -194,29 +155,31 @@ namespace Bakery
                 {
                     string line = _story.Continue();
                     if (!Valid(line)) continue;
-                    (_talkingCharacter, line) = ExtractCharacterData(line);
+                    (Dialogs.Thespians().TalkingCharacter, line) =
+                                    Dialogs.Thespians().Extract(line);
                     _delayAfter = _defaultDelayAfter;
                     _delayBefore = _defaultDelayBefore;
 
-                    ProcessTags(TagProcessor.EnumStep.BeforeLine, _story.currentTags, _talkingCharacter);
+                    ProcessTags(TagProcessor.EnumStep.BeforeLine,
+                             _story.currentTags,
+                              Dialogs.Thespians().TalkingCharacter);
 
-                    DialogEvents.BeforeNewLine.Invoke();
+                    Dialogs.Events.BeforeNewLine.Invoke();
 
                     yield return Wait(_delayBefore, extraTimer: true);
 
-                    float lineDuration = -1;
+                    float lineDuration = line.Length / _charPerSeconds;
 
-                    if (_voiceOverManager != null)
+                    yield return Dialogs.VoiceOver().LoadLine(Dialogs.Thespians().TalkingCharacter,
+                                 line);
+
+                    if (Dialogs.VoiceOver().LineDuration > 0)
                     {
-                        yield return _voiceOverManager.LoadLine(_talkingCharacter, line);
-                        lineDuration = _voiceOverManager.LineDuration;
-                        _voiceOverManager.SayLoadedLine();
+                        lineDuration = Dialogs.VoiceOver().LineDuration;
+                        Dialogs.VoiceOver().SayLine();
                     }
-                    else
-                    {
-                        lineDuration = line.Length / _charPerSeconds;
-                    }
-                    DialogEvents.OnStoryNextLine.Invoke(_talkingCharacter, line, _story.currentTags, lineDuration);
+
+                    Dialogs.Events.OnStoryNextLine.Invoke(Dialogs.Thespians().TalkingCharacter, line, _story.currentTags, lineDuration);
 
                     if (lineDuration > 0)
                         yield return Wait(Mathf.Max(0, lineDuration - _overlapDuration),
@@ -226,18 +189,19 @@ namespace Bakery
 
                     ProcessTags(TagProcessor.EnumStep.AfterLine,
                                  new(_story.currentTags),
-                                  _talkingCharacter);
+                                    Dialogs.Thespians().TalkingCharacter);
 
-                    _narrativeState.UpdateInkState();
+                    Dialogs.NarrativeState().UpdateState();
                     yield return Wait(_delayAfter, extraTimer: true);
-                    if (_voiceOverManager != null) _voiceOverManager.Stop();
+                    Dialogs.VoiceOver().Stop();
+
                     _skipOneLine = false;
                 }
 
                 if (_story.currentChoices.Count > 0)
                 {
                     _skipToNextChoice = false;
-                    DialogEvents.OnChoiceAvailable?.Invoke(GetChoices());
+                    Dialogs.Events.OnChoiceAvailable?.Invoke(GetChoices());
                     yield return new WaitUntil(() => _story.canContinue);
                     _skipOneLine = false;
                 }
@@ -292,7 +256,7 @@ namespace Bakery
             return choices;
         }
 
-        private void ProcessTags(TagProcessor.EnumStep step, List<string> tags, CharacterData character)
+        private void ProcessTags(TagProcessor.EnumStep step, List<string> tags, ThespianData character)
         {
             if (tags == null) return;
             if (tags.Count == 0) return;
@@ -304,22 +268,9 @@ namespace Bakery
             }
         }
 
-        private (CharacterData, string) ExtractCharacterData(string line)
-        {
+        public void Interrupt() => EndDialog();
 
-            if (!line.Contains(":")) return (null, line);
 
-            string[] split = line.Split(':');
-            string characterStr = split[0];
-            line = split[1];
 
-            CharacterData character = _dataCollection.Find(x => x.name == characterStr);
-            if (character == null)
-            {
-                Debug.LogWarning($"Character {characterStr} not found in data collection\n{line}");
-                return (null, line);
-            }
-            return (character, line);
-        }
     }
 }

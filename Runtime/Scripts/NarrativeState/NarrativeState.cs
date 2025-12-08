@@ -4,59 +4,34 @@ using Ink.Runtime;
 using System;
 using System.Collections.Generic;
 using Bakery;
+using System.Collections;
 
 
 namespace Bakery
 {
-    [Serializable]
-    public struct NarrativeBool
+
+    public class NarrativeState : MonoBehaviour, INarrativeState
     {
-        public string Key;
-        public bool Value;
-    }
-
-
-    [Serializable]
-    public class SerialNarrative : ISerialData
-    {
-        public const string KeyName = "NarrativeState";
-        public List<NarrativeBool> NarrativeBools;
-
-        public SerialNarrative(SerialNarrative serialNarrative)
-        {
-            NarrativeBools = new List<NarrativeBool>(serialNarrative.NarrativeBools);
-        }
-
-        public SerialNarrative()
-        {
-            NarrativeBools = new();
-        }
-
-        internal void Clear()
-        {
-            NarrativeBools.Clear();
-        }
-
-        public void Deserialize()
-        { }
-
-        public void Serialize()
-        {
-        }
-    }
-
-
-    public class NarrativeState
-    {
+        private Story _storyRef;
         SerialNarrative _serialNarrative;
-        private readonly Story _storyRef;
-
         private bool _saveEnabled;
 
-        public NarrativeState(Story story)
+        void OnEnable()
         {
-            _storyRef = story;
+            Dialogs.NarrativeState = () => this;
+        }
+        void OnDisable()
+        {
+            Dialogs.NarrativeState = Dialogs.UnregisterNarrativeState;
 
+        }
+
+        IEnumerator Start()
+        {
+            yield return Flow.Manager().WaitUntilReady;
+            yield return Dialogs.Manager().WaitUntilReady;
+
+            _storyRef = Dialogs.Manager().StoryRef;
             _saveEnabled = Persistence.Manager().IsEnabled;
 
             if (_saveEnabled)
@@ -68,15 +43,9 @@ namespace Bakery
 
         }
 
-        public void Disable()
+        void OnDestroy()
         {
             _storyRef.variablesState.variableChangedEvent -= UpdateStateFromInk;
-        }
-
-
-        ~NarrativeState()
-        {
-            Disable();
         }
 
         private void InitNarrativeVariables()
@@ -102,7 +71,7 @@ namespace Bakery
             Persistence.Manager().Cache(SerialNarrative.KeyName, _serialNarrative);
         }
 
-        public void SetNarrativeFlag(string flag, bool isTrue)
+        public void SetFlag(string flag, bool isTrue)
         {
             _serialNarrative.NarrativeBools.RemoveAll(x => x.Key == flag);
             _serialNarrative.NarrativeBools.Add(new NarrativeBool { Key = flag, Value = isTrue });
@@ -110,7 +79,7 @@ namespace Bakery
         }
 
 
-        public void UpdateInkState()
+        public void UpdateState()
         {
             _storyRef.variablesState.variableChangedEvent -= UpdateStateFromInk;
             var narrativeBools = new List<NarrativeBool>(_serialNarrative.NarrativeBools);
@@ -134,10 +103,10 @@ namespace Bakery
         private void UpdateStateFromInk(string variableName, Ink.Runtime.Object newValue)
         {
             if (newValue is Ink.Runtime.BoolValue boolValue)
-                SetNarrativeFlag(variableName, boolValue.value);
+                SetFlag(variableName, boolValue.value);
         }
 
-        public bool CheckNarrativeFlag(string condition)
+        public bool CheckFlag(string condition)
         {
 
             if (!_serialNarrative.NarrativeBools.Exists(x => x.Key == condition))

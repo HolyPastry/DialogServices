@@ -8,7 +8,7 @@ namespace Bakery
     {
         public override EnumStep Step => EnumStep.AfterLine;
 
-        public override List<string> ProcessTags(CharacterData character, List<string> tags)
+        public override List<string> ProcessTags(ThespianData character, List<string> tags)
         {
             if (tags == null) return new();
             var newTags = new List<string>(tags);

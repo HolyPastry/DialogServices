@@ -11,9 +11,9 @@ namespace Bakery
 
         public override IEnumerator Routine()
         {
-            DialogServices.Start(inkKnot);
+            Dialogs.Manager().Play(inkKnot);
             if (_waitUntilDialogEnds)
-                yield return DialogServices.WaitUntilDialogEnds();
+                yield return Dialogs.Manager().WaitUntilDialogEnds;
         }
     }
 }

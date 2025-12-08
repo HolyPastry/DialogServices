@@ -16,7 +16,7 @@ namespace Bakery
             AfterLine
         }
         public virtual EnumStep Step => EnumStep.AfterLine;
-        public abstract List<string> ProcessTags(CharacterData character, List<string> tags);
+        public abstract List<string> ProcessTags(ThespianData character, List<string> tags);
 
         public static bool ParseInt(ref List<string> tags, string key, out int value)
         {
