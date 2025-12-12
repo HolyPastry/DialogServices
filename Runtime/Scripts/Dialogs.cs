@@ -48,14 +48,14 @@ namespace Bakery
             return Manager();
         }
 
-        internal static IVoiceOverManager UnregisterVoiceOverManager()
+        public static IVoiceOverManager UnregisterVoiceOverManager()
         {
             Debug.LogWarning("No Voice Over Manager registered, using mock implementation.");
             _cachedMockVoiceOverManager ??= new MockVoiceOverManager();
             VoiceOver = () => _cachedMockVoiceOverManager;
             return VoiceOver();
         }
-        internal static INarrativeState UnregisterNarrativeState()
+        public static INarrativeState UnregisterNarrativeState()
         {
             Debug.LogWarning("No Narrative State registered, using mock implementation.");
             _cachedMockNarrativeState ??= new MockNarrativeState();
@@ -63,7 +63,7 @@ namespace Bakery
             return NarrativeState();
         }
 
-        internal static IThespianManager UnregisterThespianManager()
+        public static IThespianManager UnregisterThespianManager()
         {
             Debug.LogWarning("No Thespian Manager registered, using mock implementation.");
             _cachedMockThespianManager ??= new MockThespianManager();
