@@ -31,8 +31,6 @@ namespace Bakery
         public float NarrationSpeed
         { get => _charPerSeconds; set => _charPerSeconds = value; }
 
-
-
         private Story _story;
 
         private readonly List<TagProcessor> _tagProcessors = new();
@@ -64,10 +62,9 @@ namespace Bakery
         }
 
 
-
         void Update()
         {
-            _delayTimer?.Tick(Time.deltaTime);
+            _delayTimer?.Tick(Time.unscaledDeltaTime);
         }
 
         public void SkipToNextChoice() => _skipToNextChoice = true;
