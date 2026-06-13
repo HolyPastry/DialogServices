@@ -1,7 +1,7 @@
 {
     "name": "com.holypastry.bakery.dialogs",
-    "version": "0.1.2",
-    "displayName": "Dialog Services",
+    "version": "0.1.3",
+    "displayName": "Bakery Dialogs",
     "description": "IMPORTANT - Install the ink git hub package FIRST\nBasic service wrapping around the Ink package.",
     "unity": "2022.3",
     "unityRelease": "42f1",

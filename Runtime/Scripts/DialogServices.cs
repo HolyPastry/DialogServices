@@ -3,7 +3,7 @@ using Bakery.Dialogs;
 using UnityEngine;
 
 
-public static partial class DialogServices
+public static class DialogServices
 {
     public static Func<WaitUntil> WaitUntilReady = () => new WaitUntil(() => true);
 

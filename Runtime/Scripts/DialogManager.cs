@@ -4,8 +4,8 @@ using Ink.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Holypastry.Bakery;
-using Holypastry.Bakery.Flow;
+using Bakery.Flow;
+using Bakery.Core;
 
 
 namespace Bakery.Dialogs
